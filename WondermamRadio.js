@@ -29,8 +29,7 @@ class WondermamRadio {
 
     initData() {
         try {
-            const data = fs.readFileSync("data.json", 'utf8')
-            console.log(data);
+            const data = fs.readFileSync("data.json", 'utf8');
             this.data = JSON.parse(data);
         } catch (err) {
             console.error(err);
@@ -73,7 +72,6 @@ class WondermamRadio {
 
     createJSON(response, col) {
         let json = [];
-        console.log(response.feed.entry);
         for (let i = 0; i < response.feed.entry.length; i += col) {
             if (!(response.feed.entry[i].gs$cell.row == 1)) {
                 json.push({
@@ -89,9 +87,7 @@ class WondermamRadio {
 
     updateData(json) {
         let newData = _.differenceBy(json, this.getData(), "album");
-        console.log(newData);
         let concat = _.concat(this.getData(), newData);
-        console.log(concat);
         this.setData(concat);
     }
 
