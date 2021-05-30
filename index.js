@@ -11,12 +11,13 @@ client.on('message', msg => {
     if (msg.content === 'WMR_start') {
         var interval = setInterval(function () {
             wondermamRadio.updateJSON();
-            msg.reply(wondermamRadio.getMessage())
+            msg.channel.send(wondermamRadio.getMessage())
                 .catch(console.error); // add error handling here
         }, 604800000); // once a week
     } else if (msg.content === 'WMR_proposition') {
         wondermamRadio.updateJSON();
-        msg.reply(wondermamRadio.getMessage());
+        msg.channel.send(wondermamRadio.getMessage())
+            .catch(console.error);
     }
 });
 
