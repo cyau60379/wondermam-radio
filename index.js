@@ -8,13 +8,7 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-    if (msg.content === 'WMR_start') {
-        var interval = setInterval(function () {
-            wondermamRadio.updateJSON();
-            msg.channel.send(wondermamRadio.getMessage())
-                .catch(console.error); // add error handling here
-        }, 604800000); // once a week
-    } else if (msg.content === 'WMR_proposition') {
+    if (msg.content === 'WMR_proposition') {
         wondermamRadio.updateJSON();
         msg.channel.send(wondermamRadio.getMessage())
             .catch(console.error);

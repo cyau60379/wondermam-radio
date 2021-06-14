@@ -1,11 +1,17 @@
 let XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+let GitHub = require('github-api');
 const fs = require('fs');
 let _ = require('lodash');
+let {Base64} = require('js-base64');
 
 class WondermamRadio {
     constructor(link) {
         this.link = link;
-        this.initData();
+        this.github = new GitHub({
+            token: "xxx"
+        });
+        this.repository = this.github.getRepo('xxx', 'xxx');
+        this.initData().then(r => this.data = JSON.parse(Base64.atob(r.data.content)));
         this.jsonFile = "data.json";
         this.columnNumber = 3;
         this.turn = 0;
@@ -27,13 +33,11 @@ class WondermamRadio {
         return this.columnNumber;
     }
 
-    initData() {
+    async initData() {
         try {
-            const data = fs.readFileSync("data.json", 'utf8');
-            this.data = JSON.parse(data);
+            return await this.repository.getContents("main", "reco.json", false);
         } catch (err) {
-            console.error(err);
-            this.data = [];
+            return [];
         }
     }
 
@@ -62,7 +66,7 @@ class WondermamRadio {
             if (_.isEqual(this.getData(), [])) { // No data set for the moment
                 fs.writeFileSync(jsonFile, JSON.stringify(json));
             } else {
-                this.updateData(json);
+                this.updateData(json).then();
                 fs.writeFileSync(jsonFile, JSON.stringify(this.getData()));
             }
         } catch (err) {
@@ -85,10 +89,18 @@ class WondermamRadio {
         return json;
     }
 
-    updateData(json) {
+    async updateData(json) {
         let newData = _.differenceBy(json, this.getData(), "album");
         let concat = _.concat(this.getData(), newData);
         this.setData(concat);
+        let today = new Date();
+        let date = today.getFullYear() + "_" + (today.getMonth() + 1) + "_" + today.getDate();
+        await this.repository.writeFile(
+            'main',
+            'reco.json',
+            JSON.stringify(this.data),
+            'Update ' + date
+        );
     }
 
     getProposition() {
